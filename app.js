@@ -9,13 +9,18 @@ var express = require('express'),
     shopping = require('./models/list.js'),
     util = require('util'),
     Promise = everyauth.Promise,
-    user = {};
+    users = [];
 
 everyauth.twitter
   .consumerKey('kB8BUepK9tf9FV81TQPyg')
   .consumerSecret('BpKHQAJMUEGBqko9wRy7EPPpmA74CICOtKX6B2Ve8')
   .findOrCreateUser(function(session, accessToken, accessTokenSecret, twitterUserData) {
-    user.twitter = twitterUserData;
+    var user = users[twitterUserData.id];
+    if (!user) {
+      user = {};
+      user.twitter = twitterUserData;
+      users[twitterUserData.id] = user;
+    }
     console.log('findOrCreateUser: ' + twitterUserData.id);
     return user;
   })
