@@ -4,8 +4,21 @@
  */
 
 var express = require('express');
+var everyauth = require('everyauth');
 var app = module.exports = express.createServer();
 var shopping = require('./models/list.js');
+var util = require('util');
+var Promise = everyauth.Promise;
+
+everyauth.twitter
+  .consumerKey('kB8BUepK9tf9FV81TQPyg')
+  .consumerSecret('BpKHQAJMUEGBqko9wRy7EPPpmA74CICOtKX6B2Ve8')
+  .findOrCreateUser(function(session, accessToken, accessTokenSecret, twitterUserData) {
+    var user = {};
+    user.twitter = twitterUserData;
+    return user;
+  })
+  .redirectPath('/');
 
 // Configuration
 
@@ -16,6 +29,7 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'NOdEknOckoUt2011' }));
+  app.use(everyauth.middleware());
   app.use(require('stylus').middleware({ src: __dirname + '/public' }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
@@ -33,9 +47,6 @@ var products = [
   { name: 'eggs' },
   { name: 'ham' }
 ];
-
-console.log('products: ' + products);
-console.log('products: ' + shopping.list().products);
 
 // Routes
 
