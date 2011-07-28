@@ -3,19 +3,20 @@
  * Module dependencies.
  */
 
-var express = require('express');
-var everyauth = require('everyauth');
-var app = module.exports = express.createServer();
-var shopping = require('./models/list.js');
-var util = require('util');
-var Promise = everyauth.Promise;
+var express = require('express'),
+    everyauth = require('everyauth'),
+    app = module.exports = express.createServer(),
+    shopping = require('./models/list.js'),
+    util = require('util'),
+    Promise = everyauth.Promise,
+    user = {};
 
 everyauth.twitter
   .consumerKey('kB8BUepK9tf9FV81TQPyg')
   .consumerSecret('BpKHQAJMUEGBqko9wRy7EPPpmA74CICOtKX6B2Ve8')
   .findOrCreateUser(function(session, accessToken, accessTokenSecret, twitterUserData) {
-    var user = {};
     user.twitter = twitterUserData;
+    console.log('findOrCreateUser: ' + twitterUserData.id);
     return user;
   })
   .redirectPath('/');
