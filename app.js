@@ -11,7 +11,7 @@ var express = require('express'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     users = [];
 
-console.log('twitter key=' + conf.twitter.consumerKey);
+console.log('env=' + process.env.NODE_ENV);
 
 everyauth.twitter
   .consumerKey(conf.twitter.consumerKey)

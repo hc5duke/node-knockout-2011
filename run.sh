@@ -1,2 +1,2 @@
-node_modules/stylus/bin/stylus public/stylesheets/
-node app.js
+~/node_modules/stylus/bin/stylus public/stylesheets/
+NODE_ENV=development node app.js
