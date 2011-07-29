@@ -8,12 +8,14 @@ var express = require('express'),
     app = module.exports = express.createServer(),
     shopping = require('./models/list.js'),
     util = require('util'),
-    Promise = everyauth.Promise,
+    conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     users = [];
 
+console.log('twitter key=' + conf.twitter.consumerKey);
+
 everyauth.twitter
-  .consumerKey('kB8BUepK9tf9FV81TQPyg')
-  .consumerSecret('BpKHQAJMUEGBqko9wRy7EPPpmA74CICOtKX6B2Ve8')
+  .consumerKey(conf.twitter.consumerKey)
+  .consumerSecret(conf.twitter.consumerSecret)
   .findOrCreateUser(function(session, accessToken, accessTokenSecret, twitterUserData) {
     var user = users[twitterUserData.id];
     if (!user) {
@@ -29,6 +31,7 @@ everyauth.twitter
 // Configuration
 
 app.configure(function(){
+  console.log('default config');
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
@@ -41,11 +44,13 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
+  console.log('dev mode');
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
 app.configure('production', function(){
+  console.log('prod mode');
   app.use(express.errorHandler()); 
 });
 
@@ -60,6 +65,6 @@ app.get('/', function(req, res){
 
 everyauth.helpExpress(app);
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
