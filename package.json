@@ -1,10 +1,11 @@
 {
-    "name": "application-name"
+    "name": "ultimate-list"
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
       "express": "2.4.2"
     , "stylus": ">= 0.0.1"
     , "jade": ">= 0.0.1"
+    , "everyauth": ">= 0.2.17"
   }
 }
