@@ -3,7 +3,7 @@
 - else
   h1= title
     ul#products
-      - each product in list.productsFor(everyauth.twitter.user.id) 
-        li(class: 'product') #{product.name}
+          - each product in list.products 
+                  li(class: 'product') #{product.name}
   h3
     a(href='/logout') Logout

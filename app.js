@@ -6,7 +6,7 @@
 var express = require('express'),
     everyauth = require('everyauth'),
     app = module.exports = express.createServer(),
-    shopping = require('./models/list.js'),
+    list = require('./models/list.js'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     users = [];
@@ -57,11 +57,20 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', function(req, res){
-  res.render('index', {
-    title: 'One List to Rule Them All',
-    list: shopping.list()
+  var userId = req.session.auth ? req.session.auth.twitter.user.id : '';
+  list.findByUser(userId, function(err, userList) {
+    if (err) {
+      console.log('error finding list: ' + err);
+    } else {
+      console.log('found list for user: ' + util.inspect(userList));
+    } 
+    res.render('index', {
+      title: 'One List to Rule Them All',
+      list: userList
+    });
   });
 });
+
 
 everyauth.helpExpress(app);
 
