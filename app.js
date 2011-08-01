@@ -89,6 +89,31 @@ app.get('/list', mustBeLoggedIn, function(req, res) {
   });
 });
 
+app.post('/list/:command', mustBeLoggedIn, function(req, res) {
+  var userId = req.session.auth.twitter.user.id,
+      command = req.param('command'),
+      product = req.param('product');
+  list.findByUser(userId, function(err, userList) {
+    if (err) {
+      console.log('error retrieving user list: ' + err);
+      res.redirect('/list');
+    } else {
+      console.log('add product: ' + product);
+      userList[command](product);
+      userList.save(function(err, userList) {
+        if (err) {
+          console.log('error adding product: ' + err);
+        }
+        console.log('product added, rendering list');
+        res.render('list', {
+          title: 'One List to Rule Them All',
+          list: userList
+        });
+      });
+    }
+  });
+});
+
 everyauth.helpExpress(app);
 
 var port = process.env.PORT || 5000;

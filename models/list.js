@@ -10,13 +10,25 @@ var util = require('util'),
     }),
     listModel = mongoose.model('list', ListSchema);
 
-module.exports = function list() {
-  var that = {};
+module.exports = function list(data) {
+  var that = data || {};
   
   that.findByUser = function(userId, callback) {
-//    console.log('finding list for ' + userId);
-    listModel.findOne({user: userId}, callback);
+    listModel.findOne({user: userId}, function(err, listData) {
+      var listObj;
+      if (err) {
+        listObj = list({user: 'unknown', products: []});
+      } else {
+        listObj = list(listData);
+      }
+      callback(err, listObj);
+    });
   };
   
+  that.add = function(product) {
+    console.log('adding product: ' + util.inspect(product));
+    that.products.push(product);
+  };
+
   return that;
 }();

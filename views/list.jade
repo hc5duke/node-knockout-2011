@@ -1,4 +1,10 @@
 h1= title
+  form(action='/list/add', method='post')
+    p
+      label(for='product[name]') New item:
+        input(type='text', name='product[name]')
+    p.buttons
+      input(type='submit', value='Add')
   != partial('product', list.products)
 h3
   a(href='/logout') Logout
