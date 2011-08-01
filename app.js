@@ -7,6 +7,7 @@ var express = require('express'),
     everyauth = require('everyauth'),
     app = module.exports = express.createServer(),
     list = require('./models/list.js'),
+    listController = require('./controllers/list.js')(list),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     users = [],
@@ -76,17 +77,18 @@ app.get('/', function(req, res){
 });
 
 app.get('/list', mustBeLoggedIn, function(req, res) {
-  var userId = req.session.auth.twitter.user.id;
-  list.findByUser(userId, function(err, userList) {
-    if (err) {
-      userList = { user: 'unknown', products: [] };
-      console.log('error retrieving user list: ' + err);
-    } 
-    res.render('list', {
-      title: 'One List to Rule Them All',
-      list: userList
-    });
-  });
+  listController.index(req, res);
+//  var userId = req.session.auth.twitter.user.id;
+//  list.findByUser(userId, function(err, userList) {
+//    if (err) {
+//      userList = { user: 'unknown', products: [] };
+//      console.log('error retrieving user list: ' + err);
+//    } 
+//    res.render('list', {
+//      title: 'One List to Rule Them All',
+//      list: userList
+//    });
+//  });
 });
 
 app.post('/list/:command', mustBeLoggedIn, function(req, res) {
