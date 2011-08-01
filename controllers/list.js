@@ -1,6 +1,6 @@
 var util = require('util');
 
-module.exports = function listController(list) {
+var listController = function (list) {
   var that = {},
       emptyUser = { user: 'unknown', products: [] },
       title = 'One List to Rule Them All';
@@ -50,4 +50,10 @@ module.exports = function listController(list) {
 
   return that;
 };
+
+module.exports = function controllers() {
+  var that = {};
+  that.list = listController;
+  return that;
+}();
 

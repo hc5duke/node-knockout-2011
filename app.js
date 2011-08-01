@@ -6,8 +6,8 @@
 var express = require('express'),
     everyauth = require('everyauth'),
     app = module.exports = express.createServer(),
-    list = require('./models/list.js'),
-    listController = require('./controllers/list.js')(list),
+    models = require('./models/list.js'),
+    controllers = require('./controllers/list.js'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     users = [],
@@ -68,6 +68,14 @@ var mustBeLoggedIn = function(req, res, next) {
   req.session.auth ? next() : res.redirect('/');
 };
 
+var findController = function(req, res, next) {
+  var pattern = new RegExp("^/(.+?)(?:/.*)?$", "i"), name;
+  req.route.path.match(pattern);  
+  name = RegExp.$1;
+  req.controller = controllers[name](models[name]);
+  next();
+};
+
 // Routes
 
 app.get('/', function(req, res){
@@ -76,13 +84,14 @@ app.get('/', function(req, res){
   });
 });
 
-app.get('/list', mustBeLoggedIn, function(req, res) {
-  listController.index(req, res);
+app.get('/list', mustBeLoggedIn, findController, function(req, res) {
+  req.controller.index(req, res);
 });
 
-app.post('/list/:command', mustBeLoggedIn, function(req, res) {
+app.post('/list/:command', mustBeLoggedIn, findController, function(req, res) {
   var command = req.param('command');
-  listController[command](req, res);
+  console.log('command: ' + command);
+  req.controller[command](req, res);
 });
 
 everyauth.helpExpress(app);
