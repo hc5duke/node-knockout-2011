@@ -1,7 +1,7 @@
-var shopping = require('../models/list.js');
+var models = require('../models/list.js');
 
-describe('list', function() {
-  it('should have a findByUser function', function() {
-    expect(shopping.findByUser).toBeTruthy();
+describe('models', function() {
+  it('should have a list model', function() {
+    expect(models.list).toBeTruthy();
   });
 });
