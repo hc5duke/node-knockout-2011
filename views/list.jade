@@ -1,6 +1,4 @@
 h1= title
-  ul#products
-    - each product in list.products 
-        li(class: 'product') #{product.name}
+  != partial('product', list.products)
 h3
   a(href='/logout') Logout
