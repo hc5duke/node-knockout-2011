@@ -20,14 +20,32 @@ module.exports = function listController(list) {
     });
   };
 
+  var renderUserList = function(req, res, userList) {
+    res.render('list', {
+      title: title,
+      list: userList
+    });
+  };
+
   that.index = function(req, res) {
-    var render = function(req, res, userList) {
-      res.render('list', {
-        title: title,
-        list: userList
-      });
-    };
-    findUserList(req, res, render, render);
+    findUserList(req, res, renderUserList, renderUserList);
+  };
+
+  that.add = function(req, res) {
+    var product = req.param('product'),
+        onError = function(req, res) { res.redirect('/'); };
+        onSuccess = function(req, res, userList) {
+          console.log('add product: ' + product);
+          userList.add(product);
+          userList.save(function(err, userList) {
+            if (err) {
+              console.log('error adding product: ' + err);
+            }
+            console.log('product added, rendering list');
+            renderUserList(req, res, userList);
+          });
+        };
+    findUserList(req, res, onSuccess, onError);
   };
 
   return that;

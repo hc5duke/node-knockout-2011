@@ -78,42 +78,11 @@ app.get('/', function(req, res){
 
 app.get('/list', mustBeLoggedIn, function(req, res) {
   listController.index(req, res);
-//  var userId = req.session.auth.twitter.user.id;
-//  list.findByUser(userId, function(err, userList) {
-//    if (err) {
-//      userList = { user: 'unknown', products: [] };
-//      console.log('error retrieving user list: ' + err);
-//    } 
-//    res.render('list', {
-//      title: 'One List to Rule Them All',
-//      list: userList
-//    });
-//  });
 });
 
 app.post('/list/:command', mustBeLoggedIn, function(req, res) {
-  var userId = req.session.auth.twitter.user.id,
-      command = req.param('command'),
-      product = req.param('product');
-  list.findByUser(userId, function(err, userList) {
-    if (err) {
-      console.log('error retrieving user list: ' + err);
-      res.redirect('/list');
-    } else {
-      console.log('add product: ' + product);
-      userList[command](product);
-      userList.save(function(err, userList) {
-        if (err) {
-          console.log('error adding product: ' + err);
-        }
-        console.log('product added, rendering list');
-        res.render('list', {
-          title: 'One List to Rule Them All',
-          list: userList
-        });
-      });
-    }
-  });
+  var command = req.param('command');
+  listController[command](req, res);
 });
 
 everyauth.helpExpress(app);
