@@ -9,7 +9,15 @@ var express = require('express'),
     list = require('./models/list.js'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
-    users = [];
+    users = [],
+    mongoose = require('mongoose'),
+    db = mongoose.connect(process.env.MONGOHQ_URL, function (err) { 
+      if (err) {
+        console.log('connection err: ' + err); 
+      } else {
+        console.log('connected to db');
+      }
+    });
 
 console.log('env=' + process.env.NODE_ENV);
 
@@ -26,7 +34,7 @@ everyauth.twitter
     console.log('findOrCreateUser: ' + twitterUserData.id);
     return user;
   })
-  .redirectPath('/');
+  .redirectPath('/list');
 
 // Configuration
 
@@ -54,23 +62,32 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
+// route middleware
+var mustBeLoggedIn = function(req, res, next) {
+  req.session.auth ? next() : res.redirect('/');
+};
+
 // Routes
 
 app.get('/', function(req, res){
-  var userId = req.session.auth ? req.session.auth.twitter.user.id : '';
+  res.render('index', {
+    title: 'One List to Rule Them All'
+  });
+});
+
+app.get('/list', mustBeLoggedIn, function(req, res) {
+  var userId = req.session.auth.twitter.user.id;
   list.findByUser(userId, function(err, userList) {
     if (err) {
-      console.log('error finding list: ' + err);
-    } else {
-      console.log('found list for user: ' + util.inspect(userList));
+      userList = { user: 'unknown', products: [] };
+      console.log('error retrieving user list: ' + err);
     } 
-    res.render('index', {
+    res.render('list', {
       title: 'One List to Rule Them All',
       list: userList
     });
   });
 });
-
 
 everyauth.helpExpress(app);
 

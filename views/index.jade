@@ -1,9 +1,1 @@
-- if (!everyauth.loggedIn)
-  a(href="/auth/twitter") log in with twitter
-- else
-  h1= title
-    ul#products
-          - each product in list.products 
-                  li(class: 'product') #{product.name}
-  h3
-    a(href='/logout') Logout
+a(href="/auth/twitter") log in with twitter
