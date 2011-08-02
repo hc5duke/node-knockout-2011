@@ -1,20 +1,23 @@
 var controller = require('../controllers/list.js'),
     myController, mockList, mockReq, mockRes,
     emptyFunc = function(){},
-    dummyData = {name: 'test', products: [], add: emptyFunc, save: emptyFunc},
+    dummyList = {name: 'test', products: [], add: emptyFunc, save: emptyFunc},
     dummyResData = { 
       title: 'One List to Rule Them All',
-      list: dummyData};
+      list: dummyList};
 
 beforeEach(function() {
   mockReq = {param: emptyFunc};
   spyOn(mockReq, 'param').andReturn({name: 'myproduct'});
+
   mockRes = {render: emptyFunc};
   spyOn(mockRes, 'render').andCallFake(emptyFunc);
+
   mockList = jasmine.createSpy('mockList');
   mockList.findByUser = function(user, callback) {
-    callback(false, dummyData);
+    callback(false, dummyList);
   };
+
   myController = controller(mockList);
   myController.authorizedUser = function() {return '123';};
 });
@@ -26,8 +29,8 @@ describe('list controller', function() {
   });
 
   it('should render the list on successfully adding a product', function() {
-    spyOn(dummyData, 'save').andCallFake(function(callback) {
-      callback(false, dummyData);
+    spyOn(dummyList, 'save').andCallFake(function(callback) {
+      callback(false, dummyList);
     });
     myController.add(mockReq, mockRes);
     expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
