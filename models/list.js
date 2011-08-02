@@ -8,7 +8,6 @@ var util = require('util'),
       user: {type: String},
       products: [ProductSchema]
     });
-    //var listModel = mongoose.model('list', ListSchema);
 
 module.exports = function list(data) {
   var that = data || {};

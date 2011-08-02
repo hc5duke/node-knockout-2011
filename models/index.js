@@ -9,7 +9,7 @@ fs.readdir(modelsPath, function(err, files) {
   files.forEach(function(file) {
     if ('index.js' !== file && file.match(pattern)) {
       name = RegExp.$1;
-      console.log('loading model: ' + RegExp.$1);
+      console.log('loading model: ' + name);
       model = require('./' + name)();
       models[name] = model;
       global[name + 'Model'] = mongoose.model(name, model.schema);

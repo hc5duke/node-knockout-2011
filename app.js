@@ -72,7 +72,6 @@ var findController = function(req, res, next) {
   var pattern = new RegExp("^/(.+?)(?:/.*)?$", "i"), name;
   req.route.path.match(pattern);  
   name = RegExp.$1;
-  console.log('model: ' + util.inspect(models[name]));
   req.controller = controllers[name](models[name]);
   next();
 };
