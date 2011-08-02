@@ -14,6 +14,12 @@ var spySave = function(save) {
   spyOn(dummyList, 'save').andCallFake(save);
 };
 
+var findByUser = function(err) {
+  return function(user, callback) {
+    callback(err, dummyList);
+  };
+};
+
 beforeEach(function() {
   mockReq = {param: emptyFunc};
   spyOn(mockReq, 'param').andReturn({name: 'myproduct'});
@@ -23,9 +29,7 @@ beforeEach(function() {
   spyOn(mockRes, 'redirect').andCallFake(emptyFunc);
 
   mockList = jasmine.createSpy('mockList');
-  mockList.findByUser = function(user, callback) {
-    callback(false, dummyList);
-  };
+  mockList.findByUser = findByUser(false);
 
   myController = controller(mockList);
   myController.authorizedUser = function() {return '123';};
@@ -44,16 +48,14 @@ describe('list controller', function() {
   });
 
   it('should redirect to root on error adding a product', function() {
-    spyOn(dummyList, 'save').andCallFake(failSave);
+    spySave(failSave);
     myController.add(mockReq, mockRes);
     expect(mockRes.redirect).toHaveBeenCalledWith('/list');
   });
 
   it('should redirect to the list on error finding the list after add', function() {
-    mockList.findByUser = function(user, callback) {
-      callback(true, dummyList);
-    };
-    spyOn(dummyList, 'save').andCallFake(failSave);
+    mockList.findByUser = findByUser(true);
+    spySave(failSave);
     myController.add(mockReq, mockRes);
     expect(mockRes.redirect).toHaveBeenCalledWith('/list');
   });
