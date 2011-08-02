@@ -35,22 +35,24 @@ describe('list controller', function() {
     });
   });
 
-  it('should render the list on successfully adding a product', function() {
-    spySave(successSave);
-    myController.add(mockReq, mockRes);
-    expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
-  });
+  describe('add product', function() {
+    it('should render the list on successfully adding a product', function() {
+      spySave(successSave);
+      myController.add(mockReq, mockRes);
+      expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
+    });
 
-  it('should redirect to root on error adding a product', function() {
-    spySave(failSave);
-    myController.add(mockReq, mockRes);
-    expect(mockRes.redirect).toHaveBeenCalledWith('/list');
-  });
+    it('should redirect to root on error adding a product', function() {
+      spySave(failSave);
+      myController.add(mockReq, mockRes);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/list');
+    });
 
-  it('should redirect to the list on error finding the list after add', function() {
-    mockList.findByUser = findByUser(true);
-    spySave(failSave);
-    myController.add(mockReq, mockRes);
-    expect(mockRes.redirect).toHaveBeenCalledWith('/list');
+    it('should redirect to the list on error finding the list after add', function() {
+      mockList.findByUser = findByUser(true);
+      spySave(failSave);
+      myController.add(mockReq, mockRes);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/list');
+    });
   });
 });

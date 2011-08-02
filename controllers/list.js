@@ -35,14 +35,12 @@ module.exports = function listController(list) {
     var product = req.param('product'),
         onError = function(req, res) { res.redirect('/list'); };
         onSuccess = function(req, res, userList) {
-          console.log('add product: ' + product);
           userList.add(product);
           userList.save(function(err, userList) {
             if (err) {
               console.log('error adding product: ' + err);
               res.redirect('/list');
             } else {
-              console.log('product added, rendering list');
               renderUserList(req, res, userList);
             }
           });
