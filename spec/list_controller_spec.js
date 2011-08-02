@@ -35,4 +35,14 @@ describe('list controller', function() {
     myController.add(mockReq, mockRes);
     expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
   });
+
+  it('should redirect to root on error adding a product', function() {
+    mockRes.redirect = emptyFunc;
+    spyOn(mockRes, 'redirect').andCallFake(emptyFunc);
+    spyOn(dummyList, 'save').andCallFake(function(callback) {
+      callback(true, dummyList);
+    });
+    myController.add(mockReq, mockRes);
+    expect(mockRes.redirect).toHaveBeenCalledWith('/');
+  });
 });

@@ -40,9 +40,11 @@ module.exports = function listController(list) {
           userList.save(function(err, userList) {
             if (err) {
               console.log('error adding product: ' + err);
+              res.redirect('/list');
+            } else {
+              console.log('product added, rendering list');
+              renderUserList(req, res, userList);
             }
-            console.log('product added, rendering list');
-            renderUserList(req, res, userList);
           });
         };
     findUserList(req, res, onSuccess, onError);
