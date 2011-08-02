@@ -7,13 +7,14 @@ var util = require('util'),
       _id: mongoose.Schema.ObjectId,
       user: {type: String},
       products: [ProductSchema]
-    }),
-    listModel = mongoose.model('list', ListSchema);
+    });
+    //var listModel = mongoose.model('list', ListSchema);
 
 module.exports = function list(data) {
   var that = data || {};
   
   that.findByUser = function(userId, callback) {
+    console.log('finding user: ' + userId);
     listModel.findOne({user: userId}, function(err, listData) {
       var listObj;
       if (err) {
@@ -29,6 +30,8 @@ module.exports = function list(data) {
     console.log('adding product: ' + util.inspect(product));
     that.products.push(product);
   };
+
+  that.schema = ListSchema;
 
   return that;
 };
