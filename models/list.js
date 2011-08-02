@@ -13,7 +13,6 @@ module.exports = function list(data) {
   var that = data || {};
   
   that.findByUser = function(userId, callback) {
-    console.log('finding user: ' + userId);
     listModel.findOne({user: userId}, function(err, listData) {
       var listObj;
       if (err) {
@@ -26,8 +25,11 @@ module.exports = function list(data) {
   };
   
   that.add = function(product) {
-    console.log('adding product: ' + util.inspect(product));
     that.products.push(product);
+  };
+  
+  that.remove = function(product) {
+    that.products.pop(product);
   };
 
   that.schema = ListSchema;

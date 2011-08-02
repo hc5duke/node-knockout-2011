@@ -7,7 +7,7 @@ beforeEach(function() {
 });
 
 describe('list', function() {
-  it('list', function() {
+  it('should have a findByUser method', function() {
     expect(mylist.findByUser).toBeTruthy();
   });
 
@@ -18,6 +18,12 @@ describe('list', function() {
   it('should allow products to be added to the list', function() {
     mylist.add({name:'blah'});
     expect(mylist.products.length).toBe(1);
+  });
+
+  it('should allow products to be added to the list', function() {
+    mylist.add({name:'blah'});
+    mylist.remove({name:'blah'});
+    expect(mylist.products.length).toBe(0);
   });
 
   it('should call my callback after finding user successfully', function() {
