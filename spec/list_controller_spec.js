@@ -4,17 +4,13 @@ var controller = require('../controllers/list.js'),
     dummyList = {name: 'test', products: [], add: emptyFunc, save: emptyFunc},
     dummyResData = {title: 'One List to Rule Them All', list: dummyList},
     failSave = function(callback) { callback('error', dummyList); },
-    successSave = function(callback) { callback(false, dummyList); };
-
-var spySave = function(save) {
-  spyOn(dummyList, 'save').andCallFake(save);
-};
-
-var findByUser = function(err) {
-  return function(user, callback) {
-    callback(err, dummyList);
-  };
-};
+    successSave = function(callback) { callback(false, dummyList); },
+    spySave = function(save) { spyOn(dummyList, 'save').andCallFake(save); };
+    findByUser = function(err) {
+      return function(user, callback) {
+        callback(err, dummyList);
+      };
+    };
 
 beforeEach(function() {
   mockReq = {param: emptyFunc};
