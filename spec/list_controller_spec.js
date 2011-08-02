@@ -28,9 +28,11 @@ beforeEach(function() {
 });
 
 describe('list controller', function() {
-  it('the index method should render the list', function() {
-    myController.index(mockReq, mockRes);
-    expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
+  describe('index', function() {
+    it('the index method should render the list', function() {
+      myController.index(mockReq, mockRes);
+      expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
+    });
   });
 
   it('should render the list on successfully adding a product', function() {
