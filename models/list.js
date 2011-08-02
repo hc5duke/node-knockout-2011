@@ -10,7 +10,7 @@ var util = require('util'),
     }),
     listModel = mongoose.model('list', ListSchema);
 
-var list = function(data) {
+module.exports = function list(data) {
   var that = data || {};
   
   that.findByUser = function(userId, callback) {
@@ -32,9 +32,3 @@ var list = function(data) {
 
   return that;
 };
-
-module.exports = function models() {
-  var that = {};
-  that.list = list();
-  return that;
-}();

@@ -6,7 +6,7 @@
 var express = require('express'),
     everyauth = require('everyauth'),
     app = module.exports = express.createServer(),
-    models = require('./models/list.js'),
+    models = require('./models'),
     controllers = require('./controllers/list.js'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
@@ -72,6 +72,7 @@ var findController = function(req, res, next) {
   var pattern = new RegExp("^/(.+?)(?:/.*)?$", "i"), name;
   req.route.path.match(pattern);  
   name = RegExp.$1;
+  console.log('model: ' + util.inspect(models[name]));
   req.controller = controllers[name](models[name]);
   next();
 };
