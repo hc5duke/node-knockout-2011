@@ -2,12 +2,8 @@ var controller = require('../controllers/list.js'),
     myController, mockList, mockReq, mockRes,
     emptyFunc = function(){},
     dummyList = {name: 'test', products: [], add: emptyFunc, save: emptyFunc},
-    dummyResData = { 
-      title: 'One List to Rule Them All',
-      list: dummyList},
-    failSave = function(callback) {
-      callback('error', dummyList);
-    },
+    dummyResData = {title: 'One List to Rule Them All', list: dummyList},
+    failSave = function(callback) { callback('error', dummyList); },
     successSave = function(callback) { callback(false, dummyList); };
 
 var spySave = function(save) {
