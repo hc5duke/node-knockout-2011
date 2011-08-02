@@ -1,7 +1,9 @@
 var controller = require('../controllers/list.js'),
     myController, mockList, mockReq, mockRes,
     emptyFunc = function(){},
-    dummyList = {name: 'test', products: [], add: emptyFunc, save: emptyFunc},
+    dummyList = {name: 'test', products: [], 
+      add: emptyFunc, remove: emptyFunc, save: emptyFunc
+    },
     dummyResData = {title: 'One List to Rule Them All', list: dummyList},
     failSave = function(callback) { callback('error', dummyList); },
     successSave = function(callback) { callback(false, dummyList); },
@@ -55,4 +57,13 @@ describe('list controller', function() {
       expect(mockRes.redirect).toHaveBeenCalledWith('/list');
     });
   });
+
+  describe('remove product', function() {
+    it('should render the list on successfully removing a product', function() {
+      spySave(successSave);
+      myController.remove(mockReq, mockRes);
+      expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
+    });
+  });
+
 });

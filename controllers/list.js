@@ -27,15 +27,11 @@ module.exports = function listController(list) {
     });
   };
 
-  that.index = function(req, res) {
-    findUserList(req, res, renderUserList, renderUserList);
-  };
-
-  that.add = function(req, res) {
+  var productAction = function(req, res, action) {
     var product = req.param('product'),
         onError = function(req, res) { res.redirect('/list'); };
         onSuccess = function(req, res, userList) {
-          userList.add(product);
+          userList[action](product);
           userList.save(function(err, userList) {
             if (err) {
               console.log('error adding product: ' + err);
@@ -46,6 +42,18 @@ module.exports = function listController(list) {
           });
         };
     findUserList(req, res, onSuccess, onError);
+  };
+
+  that.index = function(req, res) {
+    findUserList(req, res, renderUserList, renderUserList);
+  };
+
+  that.add = function(req, res) {
+    productAction(req, res, 'add');
+  };
+
+  that.remove = function(req, res) {
+    productAction(req, res, 'remove');
   };
 
   return that;
