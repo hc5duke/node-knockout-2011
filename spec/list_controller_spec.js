@@ -43,6 +43,6 @@ describe('list controller', function() {
       callback(true, dummyList);
     });
     myController.add(mockReq, mockRes);
-    expect(mockRes.redirect).toHaveBeenCalledWith('/');
+    expect(mockRes.redirect).toHaveBeenCalledWith('/list');
   });
 });
