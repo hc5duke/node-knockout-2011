@@ -33,7 +33,7 @@ module.exports = function listController(list) {
 
   that.add = function(req, res) {
     var product = req.param('product'),
-        onError = function(req, res) { res.redirect('/'); };
+        onError = function(req, res) { res.redirect('/list'); };
         onSuccess = function(req, res, userList) {
           console.log('add product: ' + product);
           userList.add(product);

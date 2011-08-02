@@ -45,4 +45,17 @@ describe('list controller', function() {
     myController.add(mockReq, mockRes);
     expect(mockRes.redirect).toHaveBeenCalledWith('/list');
   });
+
+  it('should redirect to the list on error finding the list after add', function() {
+    mockList.findByUser = function(user, callback) {
+      callback(true, dummyList);
+    };
+    mockRes.redirect = emptyFunc;
+    spyOn(mockRes, 'redirect').andCallFake(emptyFunc);
+    spyOn(dummyList, 'save').andCallFake(function(callback) {
+      callback(true, dummyList);
+    });
+    myController.add(mockReq, mockRes);
+    expect(mockRes.redirect).toHaveBeenCalledWith('/list');
+  });
 });
