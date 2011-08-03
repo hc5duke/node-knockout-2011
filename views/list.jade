@@ -4,6 +4,9 @@ h1= title
       label(for='product[name]') New item:
         input(type='text', name='product[name]')
       input(type='submit', value='Add')
-  != partial('product', list.products)
+  - if (list.products) 
+    != partial('product', list.products)
+  - else
+    p Add your first product
 h3
   a(href='/logout') Logout

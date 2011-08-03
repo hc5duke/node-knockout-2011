@@ -15,24 +15,33 @@ module.exports = function list(data) {
   that.findByUser = function(userId, callback) {
     listModel.findOne({user: userId}, function(err, listData) {
       var listObj;
-      if (err) {
-        listObj = list({user: 'unknown', products: []});
-      } else {
-        listObj = list(listData);
+      if (err || !listData) {
+        console.log('error finding list or no list yet: ' + err);
+        listData = that.model();
+        listData.user = userId;
       }
+      console.log('found list: ' + util.inspect(listData));
+      listObj = list(listData);
       callback(err, listObj);
     });
   };
   
   that.add = function(product) {
+    if (!that.products) {
+      that.products = [];
+    }
     that.products.push(product);
   };
   
   that.remove = function(product) {
-    that.products.pop(product);
+    that.products.id(product.id).remove();
   };
 
   that.schema = ListSchema;
+
+  that.model = function() {
+    return new global.listModel();
+  };
 
   return that;
 };

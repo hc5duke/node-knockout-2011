@@ -32,12 +32,12 @@ module.exports = function listController(list) {
         onError = function(req, res) { res.redirect('/list'); };
         onSuccess = function(req, res, userList) {
           userList[action](product);
-          userList.save(function(err, userList) {
+          userList.save(function(err, savedList) {
             if (err) {
-              console.log('error adding product: ' + err);
+              console.log('error ' + action + 'ing product: ' + err);
               res.redirect('/list');
             } else {
-              renderUserList(req, res, userList);
+              renderUserList(req, res, savedList);
             }
           });
         };
