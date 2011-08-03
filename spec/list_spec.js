@@ -1,8 +1,34 @@
 var list = require('../models/list.js'),
     util = require('util'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    mylist;
 
-var mylist;
+var dummyId = function(values) {
+  return function(idToFind) {
+    var that = {};
+    that.remove = function() {
+      var obj,cnt;
+      console.log('id.this: ' + util.inspect(this));
+      for(cnt=0;cnt<values.length;cnt++) {
+        if (idToFind === values[cnt]._id) {
+          obj = values[cnt];
+          break;
+        }
+      }
+      values.pop(obj);
+    };
+    return that;
+  };
+};
+
+var dummyList = function(values) {
+  var that ={};
+  that.values = values;
+  that.id = dummyId(values); 
+  that.push = function(obj) { values.push(obj); };
+  that.length = values.length;
+  return that;
+};
 
 beforeEach(function() {
   mylist = list({user: '123', products: []});
@@ -24,8 +50,10 @@ describe('list', function() {
   });
 
   it('should allow products to be added to the list', function() {
+    mylist.products = dummyList([]); 
     mylist.add({ _id: '123', name:'blah'});
-    // todo - need to figure a good way to mock a mongoose object list
+    mylist.remove({id: '123'});
+    expect(mylist.products.length).toBe(0);
   });
 
   it('should call my callback after finding user successfully', function() {
