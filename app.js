@@ -21,6 +21,7 @@ var express = require('express'),
     });
 
 console.log('env=' + process.env.NODE_ENV);
+console.log('MONGOHQ_URL=' + process.env.MONGOHQ_URL);
 
 everyauth.twitter
   .consumerKey(conf.twitter.consumerKey)
