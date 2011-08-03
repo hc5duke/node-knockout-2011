@@ -26,8 +26,6 @@ describe('list', function() {
   it('should allow products to be added to the list', function() {
     mylist.add({ _id: '123', name:'blah'});
     // todo - need to figure a good way to mock a mongoose object list
-    //mylist.remove({id: '123'});
-    // expect(mylist.products.length).toBe(0);
   });
 
   it('should call my callback after finding user successfully', function() {
