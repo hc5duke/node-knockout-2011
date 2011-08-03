@@ -8,7 +8,6 @@ var dummyId = function(values) {
     var that = {};
     that.remove = function() {
       var obj,cnt;
-      console.log('id.this: ' + util.inspect(this));
       for(cnt=0;cnt<values.length;cnt++) {
         if (idToFind === values[cnt]._id) {
           obj = values[cnt];
@@ -58,7 +57,6 @@ describe('list', function() {
 
   it('should call my callback after finding user successfully', function() {
     listModel = {findOne: function(data, callback) {
-        console.log('my dummy');
         callback(null, data);
       }
     };
