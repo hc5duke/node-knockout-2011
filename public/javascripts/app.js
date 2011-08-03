@@ -16,6 +16,7 @@ $(document).ready(function() {
   $('#add-product').click(function() {
     $.post('/list/add', $('#add-product-form').serialize(), function(data, status) {
       $('#products').html(data);
+      initRemove();
     });
   });
 
