@@ -1,6 +1,6 @@
 div(id='#{product._id}', class='product')
-  form(action='/list/remove', method='post')
-    input(type='submit', value='X')
+  form(id='remove-product-form-#{product._id}', action='/list/remove', method='post')
+    input(class='remove-product', type='button', value='X', data-id='#{product._id}')
     #{product.name}
     input(type='hidden', name='product[id]', value='#{product._id}')
     input(type='hidden', name='product[name]', value='#{product.name}')

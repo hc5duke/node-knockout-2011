@@ -1,12 +1,13 @@
 h1= title
-  form(action='/list/add', method='post')
+  form(id='add-product-form', action='/list/add', method='post')
     p
       label(for='product[name]') New item:
         input(type='text', name='product[name]')
-      input(type='submit', value='Add')
-  - if (list.products) 
-    != partial('product', list.products)
-  - else
-    p Add your first product
+      input(id='add-product', type='button', value='Add')
+  #products
+    - if (list.products) 
+      != partial('product', list.products)
+    - else
+      p Add your first product
 h3
   a(href='/logout') Logout

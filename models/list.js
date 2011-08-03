@@ -20,7 +20,6 @@ module.exports = function list(data) {
         listData = that.model();
         listData.user = userId;
       }
-      console.log('found list: ' + util.inspect(listData));
       listObj = list(listData);
       callback(err, listObj);
     });

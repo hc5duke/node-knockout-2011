@@ -27,6 +27,10 @@ module.exports = function listController(list) {
     });
   };
 
+  var renderProducts = function(req, res, userList) {
+    res.partial('product', userList.products);
+  };
+
   var productAction = function(req, res, action) {
     var product = req.param('product'),
         onError = function(req, res) { res.redirect('/list'); };
@@ -37,7 +41,8 @@ module.exports = function listController(list) {
               console.log('error ' + action + 'ing product: ' + err);
               res.redirect('/list');
             } else {
-              renderUserList(req, res, savedList);
+              renderProducts(req, res, savedList);
+              // renderUserList(req, res, savedList);
             }
           });
         };

@@ -18,9 +18,10 @@ beforeEach(function() {
   mockReq = {param: emptyFunc};
   spyOn(mockReq, 'param').andReturn({name: 'myproduct'});
 
-  mockRes = {render: emptyFunc, redirect: emptyFunc};
+  mockRes = {render: emptyFunc, redirect: emptyFunc, partial: emptyFunc};
   spyOn(mockRes, 'render').andCallFake(emptyFunc);
   spyOn(mockRes, 'redirect').andCallFake(emptyFunc);
+  spyOn(mockRes, 'partial').andCallFake(emptyFunc);
 
   mockList = jasmine.createSpy('mockList');
   mockList.findByUser = findByUser(false);
@@ -41,7 +42,7 @@ describe('list controller', function() {
     it('should render the list on successfully adding a product', function() {
       spySave(successSave);
       myController.add(mockReq, mockRes);
-      expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
+      expect(mockRes.partial).toHaveBeenCalledWith('product', []);
     });
 
     it('should redirect to root on error adding a product', function() {
@@ -62,7 +63,7 @@ describe('list controller', function() {
     it('should render the list on successfully removing a product', function() {
       spySave(successSave);
       myController.remove(mockReq, mockRes);
-      expect(mockRes.render).toHaveBeenCalledWith('list',dummyResData);
+      expect(mockRes.partial).toHaveBeenCalledWith('product', []);
     });
   });
 
