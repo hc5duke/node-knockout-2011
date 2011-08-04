@@ -1,10 +1,29 @@
 var ultimateList = {};
 
+$.fn.clearForm = function() {
+  return this.each(function() {
+    var type = this.type, tag = this.tagName.toLowerCase();
+    if (tag == 'form') {
+      return $(':input',this).clearForm();
+    }
+    if (type == 'text' || type == 'password' || tag == 'textarea') {
+      this.value = '';
+    }
+    else if (type == 'checkbox' || type == 'radio') {
+      this.checked = false;
+    }
+    else if (tag == 'select') {
+      this.selectedIndex = -1;
+    }
+  });
+};
+
 ultimateList.initHtmlChangeEvent = function() {
-  var htmlFn = $.fn.html;
+  var htmlFn = $.fn.html, returnValue;
   $.fn.html = function() {
-    htmlFn.apply(this, arguments);
+    returnValue = htmlFn.apply(this, arguments);
     $(this).trigger('html-changed');
+    return returnValue;
   };
 };
 
@@ -15,6 +34,7 @@ ultimateList.clickPostInit = function() {
         resultsTag = $(this).attr('data-results-tag');
     $.post(url, $('#' + form).serialize(), function(data, status) {
       $('#' + resultsTag).html(data);
+      $('#' + form).clearForm();
     });
   });
 };
