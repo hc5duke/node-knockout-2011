@@ -39,7 +39,7 @@ module.exports = function list(data) {
   that.schema = ListSchema;
 
   that.model = function() {
-    return new global.listModel();
+    return new listModel();
   };
 
   return that;
