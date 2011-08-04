@@ -11,7 +11,7 @@ var util = require('util'),
 
 module.exports = function list(data) {
   var that = data || {};
-  
+
   that.findByUser = function(userId, callback) {
     listModel.findOne({user: userId}, function(err, listData) {
       var listObj;

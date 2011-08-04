@@ -1,8 +1,8 @@
 h1= title
-  form(id='add-product-form', action='/list/add', method='post')
+  form(id='add-product-form', action='/')
     p
       label(for='product[name]') New item:
-        input(type='text', name='product[name]')
+        input(type='text', class='enterSubmit', name='product[name]')
       input(id='add-product', type='button', value='Add')
   #products
     - if (list.products) 
