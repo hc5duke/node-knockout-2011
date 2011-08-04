@@ -1,5 +1,13 @@
 var ultimateList = {};
 
+ultimateList.initHtmlChangeEvent = function() {
+  var htmlFn = $.fn.html;
+  $.fn.html = function() {
+    htmlFn.apply(this, arguments);
+    $(this).trigger('html-changed');
+  };
+};
+
 ultimateList.clickPostInit = function() {
   $('.clickPost').click(function() {
     var url = $(this).attr('data-url'),
@@ -7,7 +15,6 @@ ultimateList.clickPostInit = function() {
         resultsTag = $(this).attr('data-results-tag');
     $.post(url, $('#' + form).serialize(), function(data, status) {
       $('#' + resultsTag).html(data);
-      ultimateList.clickPostInit();
     });
   });
 };
@@ -22,6 +29,13 @@ ultimateList.enterClickInit = function() {
 };
 
 $(document).ready(function() {
+  ultimateList.initHtmlChangeEvent();
   ultimateList.clickPostInit();
   ultimateList.enterClickInit();
+
+  $('#products').bind('html-changed', function() {
+    ultimateList.clickPostInit();
+  });
+
+
 });
