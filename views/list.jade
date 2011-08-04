@@ -2,8 +2,8 @@ h1= title
   form(id='add-product-form', action='/')
     p
       label(for='product[name]') New item:
-        input(type='text', class='enterSubmit', name='product[name]')
-      input(id='add-product', type='button', value='Add')
+        input(type='text', class='enterClick', name='product[name]', data-button='add-product')
+      input(id='add-product', type='button', class='clickPost', value='Add', data-url='/list/add', data-form='add-product-form', data-results-tag='products')
   #products
     - if (list.products) 
       != partial('product', list.products)

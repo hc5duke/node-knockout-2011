@@ -1,32 +1,27 @@
 var ultimateList = {};
 
-var initRemove = function() {
-  $('.remove-product').click(function() {
-    var id = $(this).attr('data-id'),
-        data = $('#remove-product-form-' + id).serialize();
-    $.post('/list/remove', data, function(data, status) {
-      $('#products').html(data);
-      initRemove();
+ultimateList.clickPostInit = function() {
+  $('.clickPost').click(function() {
+    var url = $(this).attr('data-url'),
+        form = $(this).attr('data-form'),
+        resultsTag = $(this).attr('data-results-tag');
+    $.post(url, $('#' + form).serialize(), function(data, status) {
+      $('#' + resultsTag).html(data);
+      ultimateList.clickPostInit();
     });
   });
 };
 
-$(document).ready(function() {
-
-  $('.enterSubmit').keypress(function(event) {
+ultimateList.enterClickInit = function() {
+  $('.enterClick').keypress(function(event) {
     if ( event.which == 13 ) {
       event.preventDefault();
-      $('#add-product').click();
+      $('#' + $(this).attr('data-button')).click();
     }
   });
+};
 
-  $('#add-product').click(function() {
-    $.post('/list/add', $('#add-product-form').serialize(), function(data, status) {
-      $('#products').html(data);
-      initRemove();
-    });
-  });
-
-  initRemove();
-
+$(document).ready(function() {
+  ultimateList.clickPostInit();
+  ultimateList.enterClickInit();
 });
