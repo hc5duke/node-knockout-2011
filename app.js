@@ -20,6 +20,8 @@ var express = require('express'),
       }
     });
 
+models.on('model-loaded', controllers.modelAssoc);
+
 console.log('env=' + process.env.NODE_ENV);
 console.log('MONGOHQ_URL=' + process.env.MONGOHQ_URL);
 
@@ -73,7 +75,7 @@ var findController = function(req, res, next) {
   var pattern = new RegExp("^/(.+?)(?:/.*)?$", "i"), name;
   req.route.path.match(pattern);  
   name = RegExp.$1;
-  req.controller = controllers[name](models[name]);
+  req.controller = controllers.find(name);
   next();
 };
 

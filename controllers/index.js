@@ -2,7 +2,29 @@
 var fs = require('fs'),
     util = require('util'),
     controllersPath = './controllers',
-    controllers = {};
+    controllerClasses = {},
+    models = {},
+    controllers = {
+      find: function(name) {
+        var controllerClass, controller, model;
+        if (this[name]) {
+          console.log('controller exists');
+          return this[name];
+        } else {
+          console.log('creating controller instance: ' + name);
+          controllerClass = controllerClasses[name];
+          model = models[name];
+          controller = controllerClass(model);
+          this[name] = controller;
+          return controller;
+        }
+      }
+    };
+
+controllers.modelAssoc = function(name, model) {
+  console.log('recieved model: ' + name);
+  models[name] = model;
+};
 
 fs.readdir(controllersPath, function(err, files) {
   var pattern = new RegExp("(.+).js$"), name, controller;
@@ -11,7 +33,7 @@ fs.readdir(controllersPath, function(err, files) {
       name = RegExp.$1;
       console.log('loading controller: ' + name);
       controller = require('./' + name);
-      controllers[name] = controller;
+      controllerClasses[name] = controller;
     }
   });
 });
