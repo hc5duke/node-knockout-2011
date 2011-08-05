@@ -9,7 +9,7 @@ var capitaliseFirstLetter = function(string) {
 };
 
 fs.readdir(modelsPath, function(err, files) {
-  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, ormModel;
+  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, modelSchema, ormModel;
   files.forEach(function(file) {
     if (file.match(pattern)) {
       name = RegExp.$1;
@@ -17,9 +17,9 @@ fs.readdir(modelsPath, function(err, files) {
       model = require('./' + name);
       modelSchema = require('./' + name + 'Schema');
       ormModel = mongoose.model(name, modelSchema);
-      modelInst = model();
       global[capitaliseFirstLetter(name) + 'Model'] = ormModel;
-      models[name] = modelInst;
+      module.exports[capitaliseFirstLetter(name) + 'Model'] = ormModel;
+      models[name] = model();
     }
   });
 });
