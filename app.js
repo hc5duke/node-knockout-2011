@@ -40,6 +40,11 @@ everyauth.twitter
   })
   .redirectPath('/list');
 
+everyauth.everymodule.moduleErrback( function (err) {
+  data.res.redirect('/'); 
+});
+
+
 // Configuration
 
 app.configure(function(){
