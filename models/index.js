@@ -27,7 +27,6 @@ fs.readdir(modelsPath, function(err, files) {
       modelSchema = require('./' + name + 'Schema');
       ormModel = mongoose.model(name, modelSchema);
       global[capitaliseFirstLetter(name) + 'Model'] = ormModel;
-      module.exports[capitaliseFirstLetter(name) + 'Model'] = ormModel;
       models[name] = model();
       eventEmitter.emit('model-loaded', name, models[name]);
     }
