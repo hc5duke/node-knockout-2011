@@ -41,7 +41,7 @@ everyauth.twitter
   .redirectPath('/list');
 
 everyauth.everymodule.moduleErrback( function (err) {
-  data.res.redirect('/'); 
+  data.res.redirect('error.jade', {title: 'One List To Rule Them All', message: err}); 
 });
 
 
@@ -68,7 +68,6 @@ app.configure('development', function() {
 
 app.configure('production', function(){
   console.log('prod mode');
-  app.use(express.errorHandler()); 
 });
 
 // route middleware
@@ -100,6 +99,10 @@ app.post('/list/:command', mustBeLoggedIn, findController, function(req, res) {
   var command = req.param('command');
   console.log('command: ' + command);
   req.controller[command](req, res);
+});
+
+app.error(function(err, req, res) {
+  res.render('error.jade', {title: 'One List To Rule Them All', message: err});
 });
 
 everyauth.helpExpress(app);
