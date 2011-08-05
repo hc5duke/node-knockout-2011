@@ -4,16 +4,21 @@ var fs = require('fs'),
     modelsPath = './models/',
     models = {};
 
+var capitaliseFirstLetter = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 fs.readdir(modelsPath, function(err, files) {
-  var pattern = new RegExp("(.+).js$"), name, model, ormModel;
+  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, ormModel;
   files.forEach(function(file) {
-    if ('index.js' !== file && file.match(pattern)) {
+    if (file.match(pattern)) {
       name = RegExp.$1;
       console.log('loading model: ' + name);
       model = require('./' + name);
+      modelSchema = require('./' + name + 'Schema');
+      ormModel = mongoose.model(name, modelSchema);
       modelInst = model();
-      ormModel = mongoose.model(name, modelInst.schema);
-      global[name + 'Model'] = ormModel;
+      global[capitaliseFirstLetter(name) + 'Model'] = ormModel;
       models[name] = modelInst;
     }
   });

@@ -1,23 +1,14 @@
-var util = require('util'),
-    mongoose = require('mongoose'),
-    ProductSchema = new mongoose.Schema({
-      name: {type: String}
-    }),
-    ListSchema = new mongoose.Schema({
-      _id: mongoose.Schema.ObjectId,
-      user: {type: String},
-      products: [ProductSchema]
-    });
+var util = require('util');
 
 module.exports = function list(data) {
   var that = data || {};
 
   that.findByUser = function(userId, callback) {
-    listModel.findOne({user: userId}, function(err, listData) {
+    ListModel.findOne({user: userId}, function(err, listData) {
       var listObj;
       if (err || !listData) {
         console.log('error finding list or no list yet: ' + err);
-        listData = that.model();
+        listData = new ListModel();
         listData.user = userId;
       }
       listObj = list(listData);
@@ -34,12 +25,6 @@ module.exports = function list(data) {
   
   that.remove = function(product) {
     that.products.id(product.id).remove();
-  };
-
-  that.schema = ListSchema;
-
-  that.model = function() {
-    return new listModel();
   };
 
   return that;

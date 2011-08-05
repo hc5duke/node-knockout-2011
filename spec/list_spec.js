@@ -56,7 +56,7 @@ describe('list', function() {
   });
 
   it('should call my callback after finding user successfully', function() {
-    listModel = {findOne: function(data, callback) {
+    ListModel = {findOne: function(data, callback) {
         callback(null, data);
       }
     };
@@ -66,10 +66,10 @@ describe('list', function() {
   });
 
   it('should call my callback after finding user with error', function() {
-    listModel = {findOne: function(data, callback) {
-        console.log('my dummy');
-        callback('error', data);
-      }
+    ListModel = function() {};
+    ListModel.findOne = function(data, callback) {
+      console.log('my dummy');
+      callback('error', data);
     };
     mylist.findByUser('123', function(err, data) {
       expect(err).toBe('error');
