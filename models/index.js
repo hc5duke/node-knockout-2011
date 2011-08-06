@@ -34,7 +34,8 @@ var createFindByFunc = function(name, model) {
   };
 };
 
-var addFindByMethods = function(toModel, fromSchema) {
+models.addFindByMethods = function(toModel, fromSchema) {
+  console.log('adding findBy methods');
   var modelTree = fromSchema.tree;
   for (var name in modelTree) {
     if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
@@ -44,7 +45,7 @@ var addFindByMethods = function(toModel, fromSchema) {
   }
 };
 
-var modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
+models.modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
   var that = modelInst;
 
   that.findOne = function(criteria, callback) {
@@ -56,10 +57,10 @@ var modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
   };
 
   that.newInstance = function(ormModelInst) { 
-    return modelWrapper(modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema);
+    return models.modelWrapper(modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema);
   };
 
-  addFindByMethods(that, modelSchema);
+  models.addFindByMethods(that, modelSchema);
 
   return that;
 };
@@ -73,7 +74,7 @@ fs.readdir(modelsPath, function(err, files) {
       model = require('./' + name);
       modelSchema = require('./' + name + 'Schema');
       OrmModel = mongoose.model(name, modelSchema);
-      models[name] = modelWrapper(model, OrmModel, model(), modelSchema);
+      models[name] = models.modelWrapper(model, OrmModel, model(), modelSchema);
       eventEmitter.emit('model-loaded', name, models[name]);
     }
   });
