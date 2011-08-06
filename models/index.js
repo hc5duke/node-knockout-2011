@@ -17,7 +17,7 @@ var capitaliseFirstLetter = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-var modelWrapper = function(name, modelFunc, OrmModel, modelInst) {
+var modelWrapper = function(modelFunc, OrmModel, modelInst) {
   var that = modelInst;
 
   that.findOne = function(criteria, callback) {
@@ -44,7 +44,7 @@ fs.readdir(modelsPath, function(err, files) {
       model = require('./' + name);
       ModelSchema = require('./' + name + 'Schema');
       OrmModel = mongoose.model(name, ModelSchema);
-      models[name] = modelWrapper(name, model, OrmModel, model());
+      models[name] = modelWrapper(model, OrmModel, model());
       eventEmitter.emit('model-loaded', name, models[name]);
     }
   });
