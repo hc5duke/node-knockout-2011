@@ -17,7 +17,34 @@ var capitaliseFirstLetter = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-var modelWrapper = function(modelFunc, OrmModel, modelInst) {
+var createFindByFunc = function(name, model) {
+  return function(value, callback) {
+    var criteria = {};
+    criteria[name] = value;
+    console.log('findBy' + name + ' using criteria ' + util.inspect(criteria));
+    model.findOne(criteria, function(err, modelData) {
+      var modelObj;
+      if (err || !modelData) {
+        console.log('error finding ' + name + ': ' + err + ': ' + modelData);
+        modelData = model.newModel();
+      }
+      modelObj = model.newInstance(modelData);
+      callback(err, modelObj);
+    });
+  };
+};
+
+var addFindByMethods = function(toModel, fromSchema) {
+  var modelTree = fromSchema.tree;
+  for (var name in modelTree) {
+    if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
+      console.log('adding findBy' + capitaliseFirstLetter(name));
+      toModel['findBy' + capitaliseFirstLetter(name)] = createFindByFunc(name, toModel); 
+    }
+  }
+};
+
+var modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
   var that = modelInst;
 
   that.findOne = function(criteria, callback) {
@@ -29,22 +56,24 @@ var modelWrapper = function(modelFunc, OrmModel, modelInst) {
   };
 
   that.newInstance = function(ormModelInst) { 
-    return modelWrapper(name, modelFunc, OrmModel, modelFunc(ormModelInst));
+    return modelWrapper(modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema);
   };
+
+  addFindByMethods(that, modelSchema);
 
   return that;
 };
 
 fs.readdir(modelsPath, function(err, files) {
-  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, ModelSchema, OrmModel;
+  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, modelSchema, OrmModel;
   files.forEach(function(file) {
     if (file.match(pattern)) {
       name = RegExp.$1;
       console.log('loading model: ' + name);
       model = require('./' + name);
-      ModelSchema = require('./' + name + 'Schema');
-      OrmModel = mongoose.model(name, ModelSchema);
-      models[name] = modelWrapper(model, OrmModel, model());
+      modelSchema = require('./' + name + 'Schema');
+      OrmModel = mongoose.model(name, modelSchema);
+      models[name] = modelWrapper(model, OrmModel, model(), modelSchema);
       eventEmitter.emit('model-loaded', name, models[name]);
     }
   });

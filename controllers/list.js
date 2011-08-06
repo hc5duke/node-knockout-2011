@@ -11,12 +11,11 @@ module.exports = function listController(list) {
   
   var findUserList = function(req, res, onSuccess, onError) {
     list.findByUser(that.authorizedUser(req), function(err, userList) {
-      if (err) {
-        console.log('error retrieving user list: ' + err);
-        onError(req, res, emptyUser);
-      } else {
-        onSuccess(req, res, userList);
+      if (userList.user === undefined) {
+        console.log('new user list adding user');
+        userList.user = that.authorizedUser(req);
       }
+      onSuccess(req, res, userList);
     });
   };
 
