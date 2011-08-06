@@ -29,9 +29,22 @@ var dummyList = function(values) {
   return that;
 };
 
+var injectDynamicFunctions = function(mylist) {
+  mylist.model = function() {return {};};
+  mylist.findOne = function(data, callback) {
+    callback(null, data);
+  };
+  mylist.newInstance = function(ormData) {
+    return list(ormData);
+  };
+  mylist.newModel = function() {
+    return {};
+  };
+};
+
 beforeEach(function() {
   mylist = list({user: '123', products: []});
-  mylist.model = function() {return {};};
+  injectDynamicFunctions(mylist);
 });
 
 describe('list', function() {
@@ -56,18 +69,13 @@ describe('list', function() {
   });
 
   it('should call my callback after finding user successfully', function() {
-    ListModel = {findOne: function(data, callback) {
-        callback(null, data);
-      }
-    };
     mylist.findByUser('123', function(err, data) {
       expect(data.user).toBe('123');
     });
   });
 
   it('should call my callback after finding user with error', function() {
-    ListModel = function() {};
-    ListModel.findOne = function(data, callback) {
+    mylist.findOne = function(data, callback) {
       console.log('my dummy');
       callback('error', data);
     };

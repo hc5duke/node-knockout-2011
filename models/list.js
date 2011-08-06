@@ -4,14 +4,14 @@ module.exports = function list(data) {
   var that = data || {};
 
   that.findByUser = function(userId, callback) {
-    ListModel.findOne({user: userId}, function(err, listData) {
+    that.findOne({user: userId}, function(err, listData) {
       var listObj;
       if (err || !listData) {
         console.log('error finding list or no list yet: ' + err);
-        listData = new ListModel();
+        listData = that.newModel();
         listData.user = userId;
       }
-      listObj = list(listData);
+      listObj = that.newInstance(listData);
       callback(err, listObj);
     });
   };

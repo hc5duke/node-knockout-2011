@@ -17,17 +17,34 @@ var capitaliseFirstLetter = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
+var modelWrapper = function(name, modelFunc, OrmModel, modelInst) {
+  var that = modelInst;
+
+  that.findOne = function(criteria, callback) {
+    OrmModel.findOne(criteria, callback);
+  };
+
+  that.newModel = function() {
+    return new OrmModel(); 
+  };
+
+  that.newInstance = function(ormModelInst) { 
+    return modelWrapper(name, modelFunc, OrmModel, modelFunc(ormModelInst));
+  };
+
+  return that;
+};
+
 fs.readdir(modelsPath, function(err, files) {
-  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, modelSchema, ormModel;
+  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, ModelSchema, OrmModel;
   files.forEach(function(file) {
     if (file.match(pattern)) {
       name = RegExp.$1;
       console.log('loading model: ' + name);
       model = require('./' + name);
-      modelSchema = require('./' + name + 'Schema');
-      ormModel = mongoose.model(name, modelSchema);
-      global[capitaliseFirstLetter(name) + 'Model'] = ormModel;
-      models[name] = model();
+      ModelSchema = require('./' + name + 'Schema');
+      OrmModel = mongoose.model(name, ModelSchema);
+      models[name] = modelWrapper(name, model, OrmModel, model());
       eventEmitter.emit('model-loaded', name, models[name]);
     }
   });
