@@ -11,14 +11,6 @@ var express = require('express'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     users = [];
 
-require('mongoose').connect(process.env.MONGOHQ_URL, function (err) { 
-  if (err) {
-    console.log('connection err: ' + err); 
-  } else {
-    console.log('connected to db');
-  }
-});
-
 require('./models').on('model-loaded', controllers.modelAssoc).load();
 
 console.log('env=' + process.env.NODE_ENV);
