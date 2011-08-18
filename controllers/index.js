@@ -13,7 +13,13 @@ var fs = require('fs'),
         } else {
           console.log('creating controller instance: ' + name);
           controllerClass = controllerClasses[name];
+          if (!controllerClass) {
+            throw 'Controller is not defined or not loaded for ' + name;
+          }
           model = models[name];
+          if (!model) {
+            throw 'Model is not defined or not loaded for ' + name;
+          }
           controller = controllerClass(model);
           this[name] = controller;
           return controller;

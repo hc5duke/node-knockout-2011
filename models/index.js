@@ -65,18 +65,52 @@ models.modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
   return that;
 };
 
-fs.readdir(modelsPath, function(err, files) {
-  var pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), name, model, modelSchema, OrmModel;
-  files.forEach(function(file) {
-    if (file.match(pattern)) {
+var modelFile = function(fileName) {
+  var that = this, pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), 
+      name, model, modelSchema, OrmModel;
+
+  that.require = function() {
+    if (fileName.match(pattern)) {
       name = RegExp.$1;
-      console.log('loading model: ' + name);
       model = require('./' + name);
+    }
+    return that;
+  };
+
+  that.requireSchema = function() {
+    if (name && model) {
       modelSchema = require('./' + name + 'Schema');
+    }
+    return that;
+  };
+
+  that.createOrmModel = function() {
+    if (name && modelSchema) {
       OrmModel = mongoose.model(name, modelSchema);
+    }
+    return that;
+  };
+
+  that.createModel = function() {
+    if (model && OrmModel && modelSchema) {
       models[name] = models.modelWrapper(model, OrmModel, model(), modelSchema);
+    }
+    return that;
+  };
+
+  that.notifyLoaded = function() {
+    if (name && model && modelSchema && OrmModel) {
       eventEmitter.emit('model-loaded', name, models[name]);
     }
+    return that;
+  };
+
+  return that;
+};
+
+fs.readdir(modelsPath, function(err, files) {
+  files.forEach(function(file) {
+    modelFile(file).require().requireSchema().createOrmModel().createModel().notifyLoaded();
   });
 });
 
