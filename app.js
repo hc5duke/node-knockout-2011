@@ -6,7 +6,6 @@
 var express = require('express'),
     everyauth = require('everyauth'),
     app = module.exports = express.createServer(),
-    models = require('./models'),
     controllers = require('./controllers'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
@@ -20,7 +19,7 @@ var express = require('express'),
       }
     });
 
-models.on('model-loaded', controllers.modelAssoc);
+require('./models').on('model-loaded', controllers.modelAssoc).load();
 
 console.log('env=' + process.env.NODE_ENV);
 console.log('MONGOHQ_URL=' + process.env.MONGOHQ_URL);
