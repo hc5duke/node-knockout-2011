@@ -9,15 +9,15 @@ var express = require('express'),
     controllers = require('./controllers'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
-    users = [],
-    mongoose = require('mongoose'),
-    db = mongoose.connect(process.env.MONGOHQ_URL, function (err) { 
-      if (err) {
-        console.log('connection err: ' + err); 
-      } else {
-        console.log('connected to db');
-      }
-    });
+    users = [];
+
+require('mongoose').connect(process.env.MONGOHQ_URL, function (err) { 
+  if (err) {
+    console.log('connection err: ' + err); 
+  } else {
+    console.log('connected to db');
+  }
+});
 
 require('./models').on('model-loaded', controllers.modelAssoc).load();
 
