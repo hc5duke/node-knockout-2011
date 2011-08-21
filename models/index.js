@@ -6,7 +6,7 @@ var fs = require('fs'),
     eventEmitter = new EventEmitter(),
     models;
 
-var connect = function() {
+function connect() {
   mongoose.connect(process.env.MONGOHQ_URL, function (err) { 
     if (err) {
       console.log('connection err: ' + err); 
@@ -14,9 +14,9 @@ var connect = function() {
       console.log('connected to db');
     }
   });
-};
+}
 
-var modelFile = function(fileName) {
+function modelFile(fileName) {
   var that = this, pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), 
       name, model, modelSchema, OrmModel;
 
@@ -58,7 +58,8 @@ var modelFile = function(fileName) {
   };
 
   return that;
-};
+}
+
 models = function() {
   var that = this;
 
