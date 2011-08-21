@@ -3,8 +3,7 @@ var fs = require('fs'),
     EventEmitter = require('events').EventEmitter,
     mongoose = require('mongoose'),
     modelsPath = './models/',
-    eventEmitter = new EventEmitter(),
-    models;
+    eventEmitter = new EventEmitter();
 
 function connect() {
   mongoose.connect(process.env.MONGOHQ_URL, function (err) { 
@@ -60,29 +59,6 @@ function modelFile(fileName, models) {
   return that;
 }
 
-models = function() {
-  var that = {};
-
-  that.on = function(event, callback) {
-    eventEmitter.on(event, callback);
-    return that;
-  };
-  that.removeListener = function(event, listener) {
-    eventEmitter.removeListener(event, listener);
-    return that;
-  };
-  that.load = function() {
-    connect();
-    fs.readdir(modelsPath, function(err, files) {
-      files.forEach(function(file) {
-        modelFile(file, that).require().requireSchema().createOrmModel().createModel().notifyLoaded();
-      });
-    });
-    return that;
-  };
-  return that;
-}();
-
 function capitaliseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -104,16 +80,42 @@ function createFindByFunc(name, model) {
   };
 }
 
-models.addFindByMethods = function(toModel, fromSchema) {
-  console.log('adding findBy methods');
-  var modelTree = fromSchema.tree;
-  for (var name in modelTree) {
-    if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
-      console.log('adding findBy' + capitaliseFirstLetter(name));
-      toModel['findBy' + capitaliseFirstLetter(name)] = createFindByFunc(name, toModel); 
+models = function() {
+  var that = {};
+
+  that.on = function(event, callback) {
+    eventEmitter.on(event, callback);
+    return that;
+  };
+
+  that.removeListener = function(event, listener) {
+    eventEmitter.removeListener(event, listener);
+    return that;
+  };
+
+  that.load = function() {
+    connect();
+    fs.readdir(modelsPath, function(err, files) {
+      files.forEach(function(file) {
+        modelFile(file, that).require().requireSchema().createOrmModel().createModel().notifyLoaded();
+      });
+    });
+    return that;
+  };
+
+  that.addFindByMethods = function(toModel, fromSchema) {
+    console.log('adding findBy methods');
+    var modelTree = fromSchema.tree;
+    for (var name in modelTree) {
+      if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
+        console.log('adding findBy' + capitaliseFirstLetter(name));
+        toModel['findBy' + capitaliseFirstLetter(name)] = createFindByFunc(name, toModel); 
+      }
     }
-  }
-};
+  };
+
+  return that;
+}();
 
 models.modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
   var that = modelInst;
