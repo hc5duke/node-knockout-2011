@@ -30,12 +30,12 @@ function createController(name) {
 var controllers = {
   find: function(name) {
     return this[name] || createController(name);
-  }
-};
+  },
 
-controllers.modelAssoc = function(name, model) {
-  console.log('recieved model: ' + name);
-  models[name] = model;
+  modelAssoc:  function(name, model) {
+    console.log('recieved model: ' + name);
+    models[name] = model;
+  }
 };
 
 fs.readdir(controllersPath, function(err, files) {
