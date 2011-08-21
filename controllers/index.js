@@ -5,7 +5,15 @@ var fs = require('fs'),
     controllerClasses = {},
     models = {};
 
-function controllerInstance(name, model) {
+function model(name) {
+  var modelInstance = models[name];
+  if (!model) {
+    throw 'Model is not defined or not loaded for ' + name;
+  }
+  return modelInstance;
+}
+
+function controller(name, model) {
   var klass = controllerClasses[name];
   if (!klass) {
     throw 'Controller is not defined or not loaded for ' + name;
@@ -14,15 +22,9 @@ function controllerInstance(name, model) {
 }
 
 function createController(name) {
-  var controller, model;
   console.log('creating controller instance: ' + name);
-  model = models[name];
-  if (!model) {
-    throw 'Model is not defined or not loaded for ' + name;
-  }
-  controller = controllerInstance(name, model);
-  this[name] = controller;
-  return controller;
+  this[name] = controller(name, model(name));
+  return this[name];
 }
 
 var controllers = {
