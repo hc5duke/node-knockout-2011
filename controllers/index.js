@@ -21,22 +21,26 @@ function controller(name, model) {
   return klass(model);
 }
 
-function createController(name) {
-  console.log('creating controller instance: ' + name);
-  this[name] = controller(name, model(name));
-  return this[name];
-}
+function controllers() {
+  var that = {};
 
-var controllers = {
-  find: function(name) {
-    return this[name] || createController(name);
-  },
+  that.find = function(name) {
+    return that[name] || that.createController(name);
+  };
 
-  modelAssoc:  function(name, model) {
+  that.createController = function(name) {
+    console.log('creating controller instance: ' + name);
+    that[name] = controller(name, model(name));
+    return that[name];
+  };
+
+  that.modelAssoc = function(name, model) {
     console.log('recieved model: ' + name);
     models[name] = model;
-  }
-};
+  };
+
+  return that;
+}
 
 fs.readdir(controllersPath, function(err, files) {
   var pattern = new RegExp("(.+).js$"), name, controller;
@@ -50,4 +54,4 @@ fs.readdir(controllersPath, function(err, files) {
   });
 });
 
-module.exports = controllers;
+module.exports = controllers();
