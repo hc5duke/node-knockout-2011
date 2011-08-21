@@ -9,12 +9,22 @@ var express = require('express'),
     controllers = require('./controllers'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
+    // loggerClient = require('loggly').createClient({ subdomain: 'weswilliamz' }),
+    logger = require('./logger.js'),
     users = [];
 
 require('./models').on('model-loaded', controllers.modelAssoc).load();
 
-console.log('env=' + process.env.NODE_ENV);
-console.log('MONGOHQ_URL=' + process.env.MONGOHQ_URL);
+// function logger(msg) {
+//   loggerClient.log(conf.loggly.key, msg, function(err, result) {
+//     if (err) {
+//       console.log('loglly err: ' + err + '; result: ' + result);
+//     }
+//   });
+// }
+
+logger('env=' + process.env.NODE_ENV);
+logger('MONGOHQ_URL=' + process.env.MONGOHQ_URL);
 
 everyauth.twitter
   .consumerKey(conf.twitter.consumerKey)
@@ -26,7 +36,7 @@ everyauth.twitter
       user.twitter = twitterUserData;
       users[twitterUserData.id] = user;
     }
-    console.log('findOrCreateUser: ' + twitterUserData.id);
+    logger('findOrCreateUser: ' + twitterUserData.id);
     return user;
   })
   .redirectPath('/list');
@@ -39,7 +49,7 @@ everyauth.everymodule.moduleErrback( function (err) {
 // Configuration
 
 app.configure(function(){
-  console.log('default config');
+  logger('default config');
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
@@ -53,12 +63,12 @@ app.configure(function(){
 });
 
 app.configure('development', function() {
-  console.log('dev mode');
+  logger('dev mode');
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
 app.configure('production', function(){
-  console.log('prod mode');
+  logger('prod mode');
 });
 
 // route middleware
@@ -88,7 +98,7 @@ app.get('/list', mustBeLoggedIn, findController, function(req, res) {
 
 app.post('/list/:command', mustBeLoggedIn, findController, function(req, res) {
   var command = req.param('command');
-  console.log('command: ' + command);
+  logger('command: ' + command);
   req.controller[command](req, res);
 });
 
@@ -101,3 +111,4 @@ everyauth.helpExpress(app);
 var port = process.env.PORT || 5000;
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+
