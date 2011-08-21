@@ -15,6 +15,58 @@ function connect() {
   });
 }
 
+function capitaliseFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function createFindByFunc(name, model) {
+  return function(value, callback) {
+    var criteria = {};
+    criteria[name] = value;
+    console.log('findBy' + name + ' using criteria ' + util.inspect(criteria));
+    model.findOne(criteria, function(err, modelData) {
+      var modelObj;
+      if (err || !modelData) {
+        console.log('error finding ' + name + ': ' + err + ': ' + modelData);
+        modelData = model.newModel();
+      }
+      modelObj = model.newInstance(modelData);
+      callback(err, modelObj);
+    });
+  };
+}
+
+function addFindByMethods(toModel, fromSchema) {
+  console.log('adding findBy methods');
+  var modelTree = fromSchema.tree;
+  for (var name in modelTree) {
+    if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
+      console.log('adding findBy' + capitaliseFirstLetter(name));
+      toModel['findBy' + capitaliseFirstLetter(name)] = createFindByFunc(name, toModel); 
+    }
+  }
+}
+
+function modelWrapper(modelFunc, OrmModel, modelInst, modelSchema, addFindByMethods) {
+  var that = modelInst;
+
+  that.findOne = function(criteria, callback) {
+    OrmModel.findOne(criteria, callback);
+  };
+
+  that.newModel = function() {
+    return new OrmModel(); 
+  };
+
+  that.newInstance = function(ormModelInst) { 
+    return modelWrapper(modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema, addFindByMethods);
+  };
+
+  addFindByMethods(that, modelSchema);
+
+  return that;
+}
+
 function modelFile(fileName, models) {
   var that = this, pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), 
       name, model, modelSchema, OrmModel;
@@ -44,7 +96,7 @@ function modelFile(fileName, models) {
 
   that.createModel = function() {
     if (model && OrmModel && modelSchema) {
-      models[name] = models.modelWrapper(model, OrmModel, model(), modelSchema);
+      models[name] = modelWrapper(model, OrmModel, model(), modelSchema, addFindByMethods);
     }
     return that;
   };
@@ -59,28 +111,7 @@ function modelFile(fileName, models) {
   return that;
 }
 
-function capitaliseFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function createFindByFunc(name, model) {
-  return function(value, callback) {
-    var criteria = {};
-    criteria[name] = value;
-    console.log('findBy' + name + ' using criteria ' + util.inspect(criteria));
-    model.findOne(criteria, function(err, modelData) {
-      var modelObj;
-      if (err || !modelData) {
-        console.log('error finding ' + name + ': ' + err + ': ' + modelData);
-        modelData = model.newModel();
-      }
-      modelObj = model.newInstance(modelData);
-      callback(err, modelObj);
-    });
-  };
-}
-
-models = function() {
+function models() {
   var that = {};
 
   that.on = function(event, callback) {
@@ -103,38 +134,11 @@ models = function() {
     return that;
   };
 
-  that.addFindByMethods = function(toModel, fromSchema) {
-    console.log('adding findBy methods');
-    var modelTree = fromSchema.tree;
-    for (var name in modelTree) {
-      if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
-        console.log('adding findBy' + capitaliseFirstLetter(name));
-        toModel['findBy' + capitaliseFirstLetter(name)] = createFindByFunc(name, toModel); 
-      }
-    }
-  };
+  // for testability
+  that.addFindByMethods = addFindByMethods;
+  that.modelWrapper = modelWrapper;
 
   return that;
-}();
+}
 
-models.modelWrapper = function(modelFunc, OrmModel, modelInst, modelSchema) {
-  var that = modelInst;
-
-  that.findOne = function(criteria, callback) {
-    OrmModel.findOne(criteria, callback);
-  };
-
-  that.newModel = function() {
-    return new OrmModel(); 
-  };
-
-  that.newInstance = function(ormModelInst) { 
-    return models.modelWrapper(modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema);
-  };
-
-  models.addFindByMethods(that, modelSchema);
-
-  return that;
-};
-
-module.exports = models;
+module.exports = models();
