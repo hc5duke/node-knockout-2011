@@ -16,7 +16,7 @@ function connect() {
   });
 }
 
-function modelFile(fileName) {
+function modelFile(fileName, models) {
   var that = this, pattern = new RegExp("^(((?!Schema|index).)+)\\.js$"), 
       name, model, modelSchema, OrmModel;
 
@@ -61,7 +61,7 @@ function modelFile(fileName) {
 }
 
 models = function() {
-  var that = this;
+  var that = {};
 
   that.on = function(event, callback) {
     eventEmitter.on(event, callback);
@@ -75,7 +75,7 @@ models = function() {
     connect();
     fs.readdir(modelsPath, function(err, files) {
       files.forEach(function(file) {
-        modelFile(file).require().requireSchema().createOrmModel().createModel().notifyLoaded();
+        modelFile(file, that).require().requireSchema().createOrmModel().createModel().notifyLoaded();
       });
     });
     return that;
@@ -83,11 +83,11 @@ models = function() {
   return that;
 }();
 
-var capitaliseFirstLetter = function(string) {
+function capitaliseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-};
+}
 
-var createFindByFunc = function(name, model) {
+function createFindByFunc(name, model) {
   return function(value, callback) {
     var criteria = {};
     criteria[name] = value;
@@ -102,7 +102,7 @@ var createFindByFunc = function(name, model) {
       callback(err, modelObj);
     });
   };
-};
+}
 
 models.addFindByMethods = function(toModel, fromSchema) {
   console.log('adding findBy methods');
