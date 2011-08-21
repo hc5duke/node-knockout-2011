@@ -17,8 +17,7 @@ describe('model loader (index.js)', function() {
   describe('modelWrapper', function() {
 
     beforeEach(function() {
-      spyOn(modelLoader, 'addFindByMethods');
-      modelLoader.modelWrapper(null, OrmModel, myModel);
+      modelLoader.modelWrapper(null, OrmModel, myModel, null, function(){});
     });
 
     it('should inject findOne method', function() {
