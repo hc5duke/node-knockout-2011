@@ -3,8 +3,7 @@ var fs = require('fs'),
     EventEmitter = require('events').EventEmitter,
     mongoose = require('mongoose'),
     modelsPath = './models/',
-    eventEmitter = new EventEmitter(),
-    ObjectID = require('mongodb').BSONPure.ObjectID;
+    eventEmitter = new EventEmitter();
 
 function connect() {
   mongoose.connect(process.env.MONGOHQ_URL, function (err) { 
