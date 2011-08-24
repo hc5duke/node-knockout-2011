@@ -2,7 +2,6 @@ var util = require('util');
 
 module.exports = function listController(list) {
   var that = {},
-      emptyUser = { user: 'unknown', products: [] },
       title = 'One List to Rule Them All';
  
   that.authorizedUser = function(req) {

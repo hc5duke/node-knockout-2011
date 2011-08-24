@@ -9,19 +9,10 @@ var express = require('express'),
     controllers = require('./controllers'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
-    // loggerClient = require('loggly').createClient({ subdomain: 'weswilliamz' }),
     logger = require('./logger.js'),
     users = [];
 
 require('./models').on('model-loaded', controllers.modelAssoc).load();
-
-// function logger(msg) {
-//   loggerClient.log(conf.loggly.key, msg, function(err, result) {
-//     if (err) {
-//       console.log('loglly err: ' + err + '; result: ' + result);
-//     }
-//   });
-// }
 
 logger('env=' + process.env.NODE_ENV);
 logger('MONGOHQ_URL=' + process.env.MONGOHQ_URL);
@@ -97,6 +88,22 @@ app.get('/list', mustBeLoggedIn, findController, function(req, res) {
 });
 
 app.post('/list/:command', mustBeLoggedIn, findController, function(req, res) {
+  var command = req.param('command');
+  logger('command: ' + command);
+  req.controller[command](req, res);
+});
+
+app.get('/store/:command', mustBeLoggedIn, findController, function(req, res) {
+  var command = req.param('command');
+  logger('command: ' + command);
+  if (req.contrller[command]) {
+    req.controller[command](req, res);
+  } else {
+    req.controller.get(req, res);
+  }
+});
+
+app.post('/store/:command', mustBeLoggedIn, findController, function(req, res) {
   var command = req.param('command');
   logger('command: ' + command);
   req.controller[command](req, res);
