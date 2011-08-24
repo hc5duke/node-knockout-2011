@@ -3,7 +3,8 @@ var fs = require('fs'),
     EventEmitter = require('events').EventEmitter,
     mongoose = require('mongoose'),
     modelsPath = './models/',
-    eventEmitter = new EventEmitter();
+    eventEmitter = new EventEmitter(),
+    ObjectID = require('mongodb').BSONPure.ObjectID;
 
 function connect() {
   mongoose.connect(process.env.MONGOHQ_URL, function (err) { 
@@ -19,16 +20,36 @@ function capitaliseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function createFindByIdFunc(model) {
+  return function(value, callback) {
+    var criteria = {_id: ObjectID.createFromHexString(value)};
+    console.log('findById using criteria ' + util.inspect(criteria));
+    model.findOne(criteria, function(err, modelData) {
+      var modelObj;
+      console.log('found ' + JSON.stringify(modelData));
+      if (err || !modelData) {
+        console.log('error finding by id: ' + err + ': ' + modelData);
+        modelData = model.newModel();
+        console.log('created new model: ' + JSON.stringify(modelData));
+      }
+      modelObj = model.newInstance(modelData);
+      callback(err, modelObj);
+    });
+  };
+}
+
 function createFindByFunc(name, model) {
   return function(value, callback) {
     var criteria = {};
-    criteria[name] = value;
+    criteria[name] = value || -1;
     console.log('findBy' + name + ' using criteria ' + util.inspect(criteria));
     model.findOne(criteria, function(err, modelData) {
       var modelObj;
+      console.log('found ' + JSON.stringify(modelData));
       if (err || !modelData) {
         console.log('error finding ' + name + ': ' + err + ': ' + modelData);
         modelData = model.newModel();
+        console.log('created new model: ' + JSON.stringify(modelData));
       }
       modelObj = model.newInstance(modelData);
       callback(err, modelObj);
@@ -38,16 +59,22 @@ function createFindByFunc(name, model) {
 
 function addFindByMethods(toModel, fromSchema) {
   console.log('adding findBy methods');
-  var modelTree = fromSchema.tree;
+  var modelTree = fromSchema.tree, findByFuncName;
   for (var name in modelTree) {
     if(modelTree.hasOwnProperty(name) && !(modelTree[name] instanceof Function)) { 
-      console.log('adding findBy' + capitaliseFirstLetter(name));
-      toModel['findBy' + capitaliseFirstLetter(name)] = createFindByFunc(name, toModel); 
+      findByFuncName = 'findBy' + capitaliseFirstLetter(name);
+      console.log('adding ' + findByFuncName);
+      console.log('existing function: ' + toModel[findByFuncName]);
+      if (name === 'id' || name === '_id') {
+        toModel[findByFuncName] = createFindByIdFunc(toModel);
+      } else {
+        toModel[findByFuncName] = createFindByFunc(name, toModel); 
+      }
     }
   }
 }
 
-function modelWrapper(modelFunc, OrmModel, modelInst, modelSchema, addFindByMethods) {
+function modelWrapper(name, modelFunc, OrmModel, modelInst, modelSchema, addFindByMethods) {
   var that = modelInst;
 
   that.findOne = function(criteria, callback) {
@@ -55,11 +82,12 @@ function modelWrapper(modelFunc, OrmModel, modelInst, modelSchema, addFindByMeth
   };
 
   that.newModel = function() {
-    return new OrmModel(); 
+    return new OrmModel();
+    // return new mongoose.model(name, modelSchema); 
   };
 
   that.newInstance = function(ormModelInst) { 
-    return modelWrapper(modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema, addFindByMethods);
+    return modelWrapper(name, modelFunc, OrmModel, modelFunc(ormModelInst), modelSchema, addFindByMethods);
   };
 
   addFindByMethods(that, modelSchema);
@@ -96,7 +124,7 @@ function modelFile(fileName, models) {
 
   that.createModel = function() {
     if (model && OrmModel && modelSchema) {
-      models[name] = modelWrapper(model, OrmModel, model(), modelSchema, addFindByMethods);
+      models[name] = modelWrapper(name, model, OrmModel, model(), modelSchema, addFindByMethods);
     }
     return that;
   };

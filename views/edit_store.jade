@@ -1,10 +1,11 @@
 h1 Store
   form(id='update-store', action='/store/update', method='post')
     p
+      input(type='hidden', name='store[_id]', value=store._id)
       label(for='store[name]') Name: 
-        input(type='text', name='store[name]')
+        input(type='text', name='store[name]', value=store.name)
     p
       label(for='store[postal_code]') Postal Code: 
-        input(type='text', name='store[postal_code]')
+        input(type='text', name='store[postal_code]', value=store.postal_code)
     p
-      input(id='submit-store', type='submit', value='Submit')
+      input(id='submit-store', type='submit', value='Save')

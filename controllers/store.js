@@ -1,11 +1,11 @@
 var util = require('util');
 
-module.exports = function listController(store) {
+module.exports = function storeController(store) {
   var that = {};
  
   var findStoreById = function(req, res, onSuccess, onError) {
     var storeData = req.param('store');
-    store.findById(storeData.id, function(err, store) {
+    store.findBy_id(storeData._id, function(err, store) {
       if (err) {
         console.log('error saving store: ' + err);
       }
@@ -19,13 +19,14 @@ module.exports = function listController(store) {
     var storeInfo = req.param('store'),
         onError = function(req, res) { res.redirect('/edit_store'); };
         onSuccess = function(req, res, store) {
-          store.save(function(err, savedStore) {
+          store.save(function(err) {
             if (err) {
               console.log('error ' + action + 'ing product: ' + err);
             }
+            console.log('saved store: ' + JSON.stringify(store));
             res.render('edit_store', {
               title: '',
-              store: savedStore
+              store: store
             });
           });
         };
@@ -36,7 +37,7 @@ module.exports = function listController(store) {
   that.create = function(req, res) {
     res.render('edit_store', { 
       title: '',
-      store: {_id: null, name: null, postal_code: null, products: []} 
+      store: {_id: "00000000o000000000000000", name: null, postal_code: null, products: []} 
      });
   };
 

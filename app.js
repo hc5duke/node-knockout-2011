@@ -32,7 +32,8 @@ everyauth.twitter
   })
   .redirectPath('/list');
 
-everyauth.everymodule.moduleErrback( function (err) {
+everyauth.everymodule.moduleErrback( function (err, data) {
+  console.log('auth err: ' + err);
   data.res.redirect('error.jade', {title: 'One List To Rule Them All', message: err}); 
 });
 
@@ -96,7 +97,7 @@ app.post('/list/:command', mustBeLoggedIn, findController, function(req, res) {
 app.get('/store/:command', mustBeLoggedIn, findController, function(req, res) {
   var command = req.param('command');
   logger('command: ' + command);
-  if (req.contrller[command]) {
+  if (req.controller[command]) {
     req.controller[command](req, res);
   } else {
     req.controller.get(req, res);
