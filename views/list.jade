@@ -3,11 +3,22 @@ h1= title
     p
       label(for='product[name]') New item:
         input(type='text', class='enterClick', name='product[name]', data-button='add-product')
-      input(id='add-product', type='button', class='clickPost', value='Add', data-url='/list/add', data-form='add-product-form', data-results-tag='products')
+      input(id='add-product', type='button', class='clickPost', value='Add', data-url='/list/add', data-form='add-product-form', data-results-func='addProduct')
+
   #products
     - if (list.products) 
       != partial('product', list.products)
     - else
-      p Add your first product
+      p#no-products Add your first product
+
+  div(id='product-template', class='product hidden')
+    form(id='remove-product-form-', action='/list/remove', method='post')
+      input(class='clickPost', type='button', value='X', data-form='remove-product-form-', data-results-func='removeProduct', data-url='/list/remove')
+      span#product-name
+      input(type='hidden', name='product[_id]')
+      input(type='hidden', name='product[name]')
+
 h3
   a(href='/logout') Logout
+
+#debug

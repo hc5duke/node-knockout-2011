@@ -25,22 +25,28 @@ module.exports = function listController(list) {
     });
   };
 
-  var renderProducts = function(req, res, userList) {
-    res.partial('product', userList.products);
+  var removeProduct = function(req, res, userList, product) {
+    res.send(JSON.stringify(product));
   };
 
-  var productAction = function(req, res, action) {
+  var addProduct = function(req, res, userList) {
+    var products = userList.products;
+    res.send(JSON.stringify(products[products.length - 1]));
+  };
+
+  var productAction = function(req, res, action, callback) {
     var product = req.param('product'),
         onError = function(req, res) { res.redirect('/list'); };
         onSuccess = function(req, res, userList) {
           userList[action](product);
-          userList.save(function(err, savedList) {
+          userList.save(function(err) {
             if (err) {
               console.log('error ' + action + 'ing product: ' + err);
               res.redirect('/list');
             } else {
-              renderProducts(req, res, savedList);
-              // renderUserList(req, res, savedList);
+              console.log('product action for: ' + JSON.stringify(product));
+              console.log('product action for: ' + JSON.stringify(userList));
+              callback(req, res, userList, product);
             }
           });
         };
@@ -52,11 +58,11 @@ module.exports = function listController(list) {
   };
 
   that.add = function(req, res) {
-    productAction(req, res, 'add');
+    productAction(req, res, 'add', addProduct);
   };
 
   that.remove = function(req, res) {
-    productAction(req, res, 'remove');
+    productAction(req, res, 'remove', removeProduct);
   };
 
   return that;

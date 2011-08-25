@@ -11,7 +11,7 @@ module.exports = function list(data) {
   };
   
   that.remove = function(product) {
-    that.products.id(product.id).remove();
+    that.products.id(product._id).remove();
   };
 
   return that;
