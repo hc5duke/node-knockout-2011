@@ -8,6 +8,7 @@ module.exports = function storeController(store) {
     store.findBy_id(storeData._id, function(err, store) {
       if (err) {
         console.log('error saving store: ' + err);
+        onError(req, res);
       }
       store.name = storeData.name;
       store.postal_code = storeData.postal_code;
@@ -25,7 +26,6 @@ module.exports = function storeController(store) {
             }
             console.log('saved store: ' + JSON.stringify(store));
             res.render('edit_store', {
-              title: '',
               store: store
             });
           });
@@ -36,7 +36,6 @@ module.exports = function storeController(store) {
 
   that.create = function(req, res) {
     res.render('edit_store', { 
-      title: '',
       store: {_id: "00000000o000000000000000", name: null, postal_code: null, products: []} 
      });
   };

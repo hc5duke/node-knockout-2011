@@ -1,8 +1,7 @@
 var util = require('util');
 
 module.exports = function listController(list) {
-  var that = {},
-      title = 'One List to Rule Them All';
+  var that = {};
  
   that.authorizedUser = function(req) {
     return req.session.auth.twitter.user.id;
@@ -10,6 +9,9 @@ module.exports = function listController(list) {
   
   var findUserList = function(req, res, onSuccess, onError) {
     list.findByUser(that.authorizedUser(req), function(err, userList) {
+      if (err) {
+        onError(req, res);
+      }
       if (userList.user === undefined) {
         console.log('new user list adding user');
         userList.user = that.authorizedUser(req);
@@ -20,7 +22,6 @@ module.exports = function listController(list) {
 
   var renderUserList = function(req, res, userList) {
     res.render('list', {
-      title: title,
       list: userList
     });
   };
@@ -44,8 +45,6 @@ module.exports = function listController(list) {
               console.log('error ' + action + 'ing product: ' + err);
               res.redirect('/list');
             } else {
-              console.log('product action for: ' + JSON.stringify(product));
-              console.log('product action for: ' + JSON.stringify(userList));
               callback(req, res, userList, product);
             }
           });

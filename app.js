@@ -10,6 +10,7 @@ var express = require('express'),
     util = require('util'),
     conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js'),
     logger = require('./logger.js'),
+    i18n = require('./i18n.js'),
     users = [];
 
 require('./models').on('model-loaded', controllers.modelAssoc).load();
@@ -48,8 +49,15 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'NOdEknOckoUt2011' }));
+
+  app.use(function(req, res, next) {
+      lang = (req.session && req.session.lang) || 'en_US';
+    res.local('i18n', i18n[lang]);
+    next();
+  });
+
   app.use(everyauth.middleware());
-  app.use(require('stylus').middleware({ src: __dirname + '/public' }));
+  app.use(require('stylus').middleware({ src: __dirname + '/public/stylesheets/' }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -79,9 +87,7 @@ var findController = function(req, res, next) {
 // Routes
 
 app.get('/', function(req, res){
-  res.render('index', {
-    title: 'One List to Rule Them All'
-  });
+  res.render('index', {});
 });
 
 app.get('/list', mustBeLoggedIn, findController, function(req, res) {

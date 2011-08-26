@@ -1,15 +1,15 @@
-h1= title
+h1= i18n.title
   form(id='add-product-form', action='/')
     p
-      label(for='product[name]') New item:
+    label(for='product[name]')= i18n.list_add_label 
         input(type='text', class='enterClick', name='product[name]', data-button='add-product')
       input(id='add-product', type='button', class='clickPost', value='Add', data-url='/list/add', data-form='add-product-form', data-results-func='addProduct')
 
   #products
-    - if (list.products) 
+    - if (list.products && list.products.length) 
       != partial('product', list.products)
     - else
-      p#no-products Add your first product
+      p#no-products= i18n.list_no_products
 
   div(id='product-template', class='product hidden')
     form(id='remove-product-form-', action='/list/remove', method='post')
@@ -19,6 +19,6 @@ h1= title
       input(type='hidden', name='product[name]')
 
 h3
-  a(href='/logout') Logout
+  a(href='/logout')= i18n.logout 
 
 #debug
