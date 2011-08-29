@@ -10,7 +10,7 @@ controllers = require('./controllers')
 util = require('util')
 conf = require('./' + (process.env.NODE_ENV || '') + '_conf.js')
 logger = require('./logger')
-i18n = require('./i18n.js')
+i18n = require('./i18n')
 users = []
 
 logger 'env=' + process.env.NODE_ENV
